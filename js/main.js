@@ -41,6 +41,7 @@ window.onload = function() {
 function Hero(game, x, y) {
     // call Phaser.Sprite constructor
     Phaser.Sprite.call(this, game, x, y, 'hero');
+    this.anchor.set(0.5, 0.5);
 }
 
 Hero.prototype = Object.create(Phaser.Sprite.prototype);
