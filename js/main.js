@@ -12,7 +12,7 @@ PlayState.preload = function () {
     this.game.load.image('grass:2x1', 'images/grass_2x1.png'); //84x42
     this.game.load.image('grass:1x1', 'images/grass_1x1.png'); //42x42
     this.game.load.image('hero', 'images/hero_stopped.png'); // 38x42
-    this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22);
+    this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22); //38x38
     this.game.load.audio('sfx:coin', 'audio/coin.wav');
 };
 
