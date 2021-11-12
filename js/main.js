@@ -1,3 +1,5 @@
+const { Phaser } = require("./phaser.min");
+
 PlayState = {};
 
 PlayState.preload = function () {
@@ -75,3 +77,32 @@ function Hero(game, x, y) {
 
 Hero.prototype = Object.create(Phaser.Sprite.prototype);
 Hero.prototype.constructor = Hero;
+
+PlayState.init = function() {
+    this.keys = this.game.input.keyboard.addKeys({
+        left: Phaser.KeyCode.LEFT,
+        right: Phaser.KeyCode.RIGHT
+    });
+};
+
+Hero.prototype.move = function (direction) {
+    this.x += direction * 2.5;
+};
+
+PlayState.update = function () {
+    this._handleInput();
+};
+
+PlayState._handleInput = function () {
+    if (this.keys.left.isDown) {
+        this.hero.move(-1);
+    } else if (this.keys.right.isDown) {
+        this.hero.move(1);
+    }
+};
+
+PlayState.init = function () {
+    // this function will fix the blurriness of the game sprites
+    this.game.renderer.renderSession.roundPixels = true;
+};
+
