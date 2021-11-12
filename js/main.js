@@ -1,4 +1,4 @@
-const { Phaser } = require("./phaser.min");
+//const { Phaser } = require("phaser.min.js");
 
 PlayState = {};
 
@@ -79,6 +79,7 @@ Hero.prototype = Object.create(Phaser.Sprite.prototype);
 Hero.prototype.constructor = Hero;
 
 PlayState.init = function() {
+    this.game.renderer.renderSession.roundPixels = true;
     this.keys = this.game.input.keyboard.addKeys({
         left: Phaser.KeyCode.LEFT,
         right: Phaser.KeyCode.RIGHT
@@ -99,10 +100,5 @@ PlayState._handleInput = function () {
     } else if (this.keys.right.isDown) {
         this.hero.move(1);
     }
-};
-
-PlayState.init = function () {
-    // this function will fix the blurriness of the game sprites
-    this.game.renderer.renderSession.roundPixels = true;
 };
 
