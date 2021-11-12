@@ -128,67 +128,12 @@ function Hero(game, x, y) {
 }
 
 Hero.prototype = Object.create(Phaser.Sprite.prototype);
-
 Hero.prototype.constructor = Hero;
 
-Hero.prototype.move = function (direction) {
-    const SPEED = 200;
-    this.body.velocity.x = direction * SPEED;
-    this.x += direction * 2.5;
-};
-
-
-// ADDING MOVEMENT TO SPRITES
-PlayState.init = function() {
-    // this function will fix the blurriness of the game sprites
-    this.game.renderer.renderSession.roundPixels = true;
-
-    this.keys = this.game.input.keyboard.addKeys({
-        left: Phaser.KeyCode.LEFT,
-        right: Phaser.KeyCode.RIGHT,
-        up: Phaser.KeyCode.UP,
-        down: Phaser.KeyCode.DOWN
-    });
-
-    this.keys.up.onDown.add(function () {
-        let didJump = this.hero.jump();
-        if (didJump) {
-            this.sfx.jump.play();
-        }
-    }, this);
-};
-
-
-Hero.prototype.jump = function () {
-    const JUMP_SPEED = 600;
-    let canJump = this.body.touching.down;
-
-    if (canJump) {
-        this.body.velocity.y = -JUMP_SPEED;
-    }
-    
-    return canJump;
-};
-
-
-PlayState.update = function () {
-    this._handleInput();
-    this._handleCollisions();
-};
-
-PlayState._handleInput = function () {
-    if (this.keys.left.isDown) {
-        this.hero.move(-1);
-    }
-    else if (this.keys.right.isDown) {
-        this.hero.move(1);
-    }
-    else {
-        this.hero.move(0);
-    }
-};
-
 //*** WALKING ENEMIES ***//
+PlayState.preload = function() {
+    this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
+}
 
 function Spider(game, x, y) {
     Phaser.Sprite.call(this, game, x, y, 'spider');
@@ -211,24 +156,3 @@ Spider.SPEED = 100;
 // inherit from Phaser.Sprite
 Spider.prototype = Object.create(Phaser.Sprite.prototype);
 Spider.prototype.constructor = Spider;
-
-PlayState._spawnEnemyWall = function (x, y, side) {
-    let sprite = this.enemyWalls.create(x, y, 'invisible-wall');
-    // anchor and y displacement
-    sprite.anchor.set(side === 'left' ? 1 : 0, 1);
-
-    // physic properties
-    this.game.physics.enable(sprite);
-    sprite.body.immovable = true;
-    sprite.body.allowGravity = false;
-};
-
-Spider.prototype.update = function () {
-    // check against walls and reverse direction if necessary
-    if (this.body.touching.right || this.body.blocked.right) {
-        this.body.velocity.x = -Spider.SPEED; // turn left
-    }
-    else if (this.body.touching.left || this.body.blocked.left) {
-        this.body.velocity.x = Spider.SPEED; // turn right
-    }
-};
