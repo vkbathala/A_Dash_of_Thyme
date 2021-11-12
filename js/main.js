@@ -34,9 +34,6 @@ PlayState._loadLevel = function(data) {
     this.platforms = this.game.add.group();
     this.coins = this.game.add.group();
     this.spiders = this.game.add.group();
-    this.enemyWalls = this.game.add.group();
-    this.enemyWalls.visible = false;
-
     data.platforms.forEach(this._spawnPlatform, this);
     data.coins.forEach(this._spawnCoin, this);
     this._spawnCharacters({hero: data.hero, spiders: data.spiders});
@@ -73,8 +70,8 @@ PlayState._spawnCharacters = function (data) {
     // spawn hero
     this.hero = new Hero(this.game, data.hero.x, data.hero.y);
     this.game.add.existing(this.hero);
-     // spawn spiders
-     data.spiders.forEach(function (spider) {
+    //spawn spider
+    data.spiders.forEach(function (spider) {
         let sprite = new Spider(this.game, spider.x, spider.y);
         this.spiders.add(sprite);
     }, this);
@@ -152,10 +149,6 @@ PlayState.init = function() {
         up: Phaser.KeyCode.UP,
         down: Phaser.KeyCode.DOWN
     });
-
-    this.keys.up.onDown.add(function () {
-        this.hero.jump();
-    }, this);
 
     this.keys.up.onDown.add(function () {
         let didJump = this.hero.jump();
