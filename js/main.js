@@ -95,6 +95,7 @@ PlayState._handleCollisions = function () {
     this.game.physics.arcade.collide(this.spiders, this.platforms);
     this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
     this.game.physics.arcade.overlap(this.hero, this.coins, this._onHeroVsCoin, null, this);
+    this.game.physics.arcade.collide(this.hero, this.platforms);
 };
 
 PlayState._onHeroVsCoin = function (hero, coin) {
@@ -185,11 +186,6 @@ PlayState._handleInput = function () {
         this.hero.move(0);
     }
 };
-
-PlayState._handleCollisions = function () {
-    this.game.physics.arcade.collide(this.hero, this.platforms);
-};
-
 
 // Spider things
 
