@@ -431,12 +431,17 @@ function countDown() {
         // Time calculations for days, hours, minutes and seconds
         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        if (minutes == 0 && seconds == 0) {
+            nextScreen();
+        }
+
     }, 1000)
 }
 countDown();
 
 function game() {
-    if (cheesePickupCount == 10 && breadPickupCount == 2) {
+    if (cheesePickupCount == 10 && breadPickupCount == 1) {
         nextScreen();
     }
 }
