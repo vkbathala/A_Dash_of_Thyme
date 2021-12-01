@@ -14,7 +14,8 @@ PlayState.preload = function () {
     this.game.load.image('hero', 'images/hero_stopped.png'); // 38x42
     this.game.load.image('invisible-wall', 'images/invisible_wall.png');
     this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22); //38x38
-    this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
+    //this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
+    this.game.load.spritesheet('mouse', 'images/mouse.png', 38, 38);
     this.game.load.image('icon:mouse', 'images/mouse.png');
     this.game.load.audio('sfx:coin', 'audio/coin.wav');
     this.game.load.audio('sfx:jump', 'audio/jump.wav');
@@ -41,16 +42,18 @@ PlayState._loadLevel = function(data) {
     this.platforms = this.game.add.group();
     this.cheese = this.game.add.group();
     this.bread = this.game.add.group();
-    this.spiders = this.game.add.group();
+    //this.spiders = this.game.add.group();
+    this.mice = this.game.add.group();
     this.enemyWalls = this.game.add.group();
     this.enemyWalls.visible = false;
 
     data.platforms.forEach(this._spawnPlatform, this);
     data.coins.forEach(this._spawnCheese, this); // THIS LINE IS BREAKING THINGS
-    this._spawnCharacters({hero: data.hero, spiders: data.spiders});
+    //this._spawnCharacters({hero: data.hero, spiders: data.spiders});
+    this._spawnCharacters({hero: data.hero, mice: data.mice});
     
     // adding GRAVITY YEEE
-    const GRAVITY = 1200;
+    const GRAVITY = 1100;
     this.game.physics.arcade.gravity.y = GRAVITY;
 };
 
@@ -71,11 +74,16 @@ PlayState._spawnPlatform = function (platform) {
 
 PlayState._spawnCharacters = function (data) {
     // spawn spiders
-    data.spiders.forEach(function (spider) {
+    /*data.spiders.forEach(function (spider) {
         let sprite = new Spider(this.game, spider.x, spider.y);
         this.spiders.add(sprite);
+    }, this);*/
+    data.mice.forEach(function (mouse) {
+        let sprite = new Mouse(this.game, mouse.x, mouse.y);
+        this.mice.add(sprite);
     }, this);
     // spawn hero
+    //this.mice = new Mouse(this.game, data.mouse.x, data.mouse.y);
     this.hero = new Hero(this.game, data.hero.x, data.hero.y);
     this.game.add.existing(this.hero);
 };
@@ -106,12 +114,16 @@ PlayState._spawnEnemyWall = function (x, y, side) {
 };
 
 PlayState._handleCollisions = function () {
-    this.game.physics.arcade.collide(this.spiders, this.platforms);
-    this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
+    //this.game.physics.arcade.collide(this.spiders, this.platforms);
+    //this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
+    this.game.physics.arcade.collide(this.mice, this.platforms);
+    this.game.physics.arcade.collide(this.mice, this.enemyWalls);
     this.game.physics.arcade.overlap(this.hero, this.cheese, this._onHeroVsCheese, null, this);
     this.game.physics.arcade.overlap(this.hero, this.bread, this._onHeroVsBread, null, this);
     this.game.physics.arcade.collide(this.hero, this.platforms);
-    this.game.physics.arcade.overlap(this.hero, this.spiders, this._onHeroVsEnemy, null, this);
+    //this.game.physics.arcade.overlap(this.hero, this.spiders, this._onHeroVsEnemy, null, this);
+    this.game.physics.arcade.overlap(this.hero, this.mice, this._onHeroVsEnemy, null, this);
+
 };
 
 PlayState._onHeroVsCheese = function (hero, cheese) {
@@ -261,7 +273,7 @@ PlayState._handleInput = function () {
 
 // Spider things
 
-function Spider(game, x, y) {
+/*function Spider(game, x, y) {
     Phaser.Sprite.call(this, game, x, y, 'spider');
 
     // anchor
@@ -275,12 +287,29 @@ function Spider(game, x, y) {
     this.game.physics.enable(this);
     this.body.collideWorldBounds = true;
     this.body.velocity.x = Spider.SPEED;
+}*/
+
+function Mouse(game, x, y) {
+    Phaser.Sprite.call(this, game, x, y, 'mouse');
+
+    // anchor
+    this.anchor.set(0.5);
+    // animation
+    //this.animations.add('crawl', [0, 1, 2], 8, true);
+    //this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
+    //this.animations.play('crawl');
+
+    // physic properties
+    this.game.physics.enable(this);
+    this.body.collideWorldBounds = true;
+    this.body.velocity.x = Mouse.SPEED;
 }
 
-Spider.SPEED = 100;
+//Spider.SPEED = 100;
+Mouse.SPEED = 100;
 
 // inherit from Phaser.Sprite
-Spider.prototype = Object.create(Phaser.Sprite.prototype);
+/*Spider.prototype = Object.create(Phaser.Sprite.prototype);
 Spider.prototype.constructor = Spider;
 
 Spider.prototype.die = function () {
@@ -300,7 +329,28 @@ Spider.prototype.update = function () {
         this.body.velocity.x = Spider.SPEED; // turn right
     }
 };
+*/
 
+Mouse.prototype = Object.create(Phaser.Sprite.prototype);
+Mouse.prototype.constructor = Mouse;
+
+Mouse.prototype.die = function () {
+    this.body.enable = false;
+
+    /*this.animations.play('die').onComplete.addOnce(function () {
+        this.kill();
+    }, this);*/
+};
+
+Mouse.prototype.update = function () {
+    // check against walls and reverse direction if necessary
+    if (this.body.touching.right || this.body.blocked.right) {
+        this.body.velocity.x = -Mouse.SPEED; // turn left
+    }
+    else if (this.body.touching.left || this.body.blocked.left) {
+        this.body.velocity.x = Mouse.SPEED; // turn right
+    }
+};
 
 // SCREEN CHANGES
 
