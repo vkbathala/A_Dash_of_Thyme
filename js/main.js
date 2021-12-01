@@ -23,10 +23,19 @@ PlayState.preload = function () {
     this.game.load.image('icon:bread', 'images/bread.png');
     this.game.load.image('icon:cheese', 'images/cheese.png');
     this.game.load.image('font:numbers', 'images/numbers.png');
+    this.game.load.spritesheet('door', 'images/door.png', 42, 66);
+    //this.game.load.image('key', 'images/key.png');
+    this.game.load.image('bread', 'images/bread.png');
+    //this.game.load.audio('sfx:key', 'audio/key.wav');
+    this.game.load.audio('sfx:bread', 'audio/key.wav');
+    this.game.load.audio('sfx:door', 'audio/door.wav');
 };
 
 PlayState.create = function () {
     this.sfx = {
+        //key: this.game.add.audio('sfx:key'),
+        bread: this.game.add.audio('sfx:bread'),
+        door: this.game.add.audio('sfx:door'),
         jump: this.game.add.audio('sfx:jump'),
         cheese: this.game.add.audio('sfx:coin'),
         bread: this.game.add.audio('sfx:coin'),
@@ -39,6 +48,7 @@ PlayState.create = function () {
 };
 
 PlayState._loadLevel = function(data) {
+    this.bgDecoration = this.game.add.group();
     this.platforms = this.game.add.group();
     this.cheese = this.game.add.group();
     this.bread = this.game.add.group();
@@ -49,12 +59,36 @@ PlayState._loadLevel = function(data) {
 
     data.platforms.forEach(this._spawnPlatform, this);
     data.coins.forEach(this._spawnCheese, this); // THIS LINE IS BREAKING THINGS
+    this._spawnDoor(data.door.x, data.door.y);
+    //this._spawnKey(data.key.x, data.key.y);
+    this._spawnBread(data.bread.x, data.bread.y);
     //this._spawnCharacters({hero: data.hero, spiders: data.spiders});
     this._spawnCharacters({hero: data.hero, mice: data.mice});
     
     // adding GRAVITY YEEE
     const GRAVITY = 1100;
     this.game.physics.arcade.gravity.y = GRAVITY;
+};
+
+/*PlayState._spawnKey = function (x, y) {
+    this.key = this.bgDecoration.create(x, y, 'key');
+    this.key.anchor.set(0.5, 0.5);
+    this.game.physics.enable(this.key);
+    this.key.body.allowGravity = false;
+};*/
+
+PlayState._spawnBread = function (x, y) {
+    this.bread = this.bgDecoration.create(x, y, 'bread');
+    this.bread.anchor.set(0.5, 0.5);
+    this.game.physics.enable(this.bread);
+    this.bread.body.allowGravity = false;
+};
+
+PlayState._spawnDoor = function (x, y) {
+    this.door = this.bgDecoration.create(x, y, 'door');
+    this.door.anchor.setTo(0.5, 1);
+    this.game.physics.enable(this.door);
+    this.door.body.allowGravity = false;
 };
 
 PlayState._spawnPlatform = function (platform) {
@@ -97,7 +131,7 @@ PlayState._spawnCheese = function (cheese) {
 
 PlayState._spawnBread = function (bread) {
     let sprite = this.bread.create(bread.x, bread.y, 'icon:bread');
-    sprite.anchor.set(0.5, 0.5);
+    sprite.anchor.set(-24, -2.5);
     this.game.physics.enable(sprite);
     sprite.body.allowGravity = false;
 };
@@ -123,7 +157,32 @@ PlayState._handleCollisions = function () {
     this.game.physics.arcade.collide(this.hero, this.platforms);
     //this.game.physics.arcade.overlap(this.hero, this.spiders, this._onHeroVsEnemy, null, this);
     this.game.physics.arcade.overlap(this.hero, this.mice, this._onHeroVsEnemy, null, this);
+    //this.game.physics.arcade.overlap(this.hero, this.key, this._onHeroVsKey, null, this)
+    this.game.physics.arcade.overlap(this.hero, this.bread, this._onHeroVsBread, null, this)
+    this.game.physics.arcade.overlap(this.hero, this.door, this._onHeroVsDoor,
+        // ignore if there is no key or the player is on air
+        function (hero, door) {
+            //return this.hasKey && hero.body.touching.down;
+            return this.hasBread && hero.body.touching.down;
+        }, this);
+};
 
+PlayState._onHeroVsDoor = function (hero, door) {
+    this.sfx.door.play();
+    this.game.state.restart();
+    // TODO: go to the next level instead
+};
+
+/*PlayState._onHeroVsKey = function (hero, key) {
+    this.sfx.key.play();
+    key.kill();
+    this.hasKey = true;
+};*/
+
+PlayState._onHeroVsBread = function (hero, bread) {
+    this.sfx.bread.play();
+    bread.kill();
+    this.hasBread = true;
 };
 
 PlayState._onHeroVsCheese = function (hero, cheese) {
@@ -250,6 +309,8 @@ PlayState.init = function() {
 
     this.cheesePickupCount = 0;
     this.breadPickupCount = 0;
+    //this.hasKey = false;
+    this.hasBread = false;
 };
 
 PlayState.update = function () {
@@ -299,6 +360,7 @@ function Mouse(game, x, y) {
     //this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
     //this.animations.play('crawl');
 
+
     // physic properties
     this.game.physics.enable(this);
     this.body.collideWorldBounds = true;
@@ -337,9 +399,9 @@ Mouse.prototype.constructor = Mouse;
 Mouse.prototype.die = function () {
     this.body.enable = false;
 
-    /*this.animations.play('die').onComplete.addOnce(function () {
-        this.kill();
-    }, this);*/
+
+    this.kill();
+
 };
 
 Mouse.prototype.update = function () {
