@@ -433,7 +433,7 @@ function countDown() {
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
         if (minutes == 0 && seconds == 0) {
-            nextScreen();
+            loseScreen();
         }
 
     }, 1000)
