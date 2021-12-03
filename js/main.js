@@ -1,8 +1,7 @@
-//const { Phaser } = require("phaser.min.js");
-
 PlayState = {};
 
 PlayState.preload = function () {
+    this.game.load.json('level:0', 'data/level00.json');
     this.game.load.json('level:1', 'data/level01.json');
     this.game.load.image('background', 'images/background_960x600.png'); //960x600
     this.game.load.image('ground', 'images/ground.png'); //966x84
@@ -14,7 +13,6 @@ PlayState.preload = function () {
     this.game.load.image('hero', 'images/hero_stopped.png'); // 38x42
     this.game.load.image('invisible-wall', 'images/invisible_wall.png');
     this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22); //38x38
-    //this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
     this.game.load.spritesheet('mouse', 'images/mouse.png', 38, 38);
     this.game.load.image('icon:mouse', 'images/mouse.png');
     this.game.load.audio('sfx:coin', 'audio/coin.wav');
@@ -24,16 +22,13 @@ PlayState.preload = function () {
     this.game.load.image('icon:cheese', 'images/cheese.png');
     this.game.load.image('font:numbers', 'images/numbers.png');
     this.game.load.spritesheet('door', 'images/door.png', 42, 66);
-    //this.game.load.image('key', 'images/key.png');
     this.game.load.image('bread', 'images/bread.png');
-    //this.game.load.audio('sfx:key', 'audio/key.wav');
     this.game.load.audio('sfx:bread', 'audio/key.wav');
     this.game.load.audio('sfx:door', 'audio/door.wav');
 };
 
 PlayState.create = function () {
     this.sfx = {
-        //key: this.game.add.audio('sfx:key'),
         bread: this.game.add.audio('sfx:bread'),
         door: this.game.add.audio('sfx:door'),
         jump: this.game.add.audio('sfx:jump'),
@@ -43,6 +38,7 @@ PlayState.create = function () {
     };
     this.game.add.image(0, 0, 'background');
     this._loadLevel(this.game.cache.getJSON('level:1'));
+    this._loadLevel(this.game.cache.getJSON(`level:${this.level}`));
     this._createHud();
     this._createHud2();
 };
@@ -52,7 +48,6 @@ PlayState._loadLevel = function(data) {
     this.platforms = this.game.add.group();
     this.cheese = this.game.add.group();
     this.bread = this.game.add.group();
-    //this.spiders = this.game.add.group();
     this.mice = this.game.add.group();
     this.enemyWalls = this.game.add.group();
     this.enemyWalls.visible = false;
@@ -60,22 +55,13 @@ PlayState._loadLevel = function(data) {
     data.platforms.forEach(this._spawnPlatform, this);
     data.coins.forEach(this._spawnCheese, this); // THIS LINE IS BREAKING THINGS
     this._spawnDoor(data.door.x, data.door.y);
-    //this._spawnKey(data.key.x, data.key.y);
     this._spawnBread(data.bread.x, data.bread.y);
-    //this._spawnCharacters({hero: data.hero, spiders: data.spiders});
     this._spawnCharacters({hero: data.hero, mice: data.mice});
     
     // adding GRAVITY YEEE
     const GRAVITY = 1100;
     this.game.physics.arcade.gravity.y = GRAVITY;
 };
-
-/*PlayState._spawnKey = function (x, y) {
-    this.key = this.bgDecoration.create(x, y, 'key');
-    this.key.anchor.set(0.5, 0.5);
-    this.game.physics.enable(this.key);
-    this.key.body.allowGravity = false;
-};*/
 
 PlayState._spawnBread = function (x, y) {
     this.bread = this.bgDecoration.create(x, y, 'bread');
@@ -107,17 +93,12 @@ PlayState._spawnPlatform = function (platform) {
 };
 
 PlayState._spawnCharacters = function (data) {
-    // spawn spiders
-    /*data.spiders.forEach(function (spider) {
-        let sprite = new Spider(this.game, spider.x, spider.y);
-        this.spiders.add(sprite);
-    }, this);*/
+    // spawn mice
     data.mice.forEach(function (mouse) {
         let sprite = new Mouse(this.game, mouse.x, mouse.y);
         this.mice.add(sprite);
     }, this);
     // spawn hero
-    //this.mice = new Mouse(this.game, data.mouse.x, data.mouse.y);
     this.hero = new Hero(this.game, data.hero.x, data.hero.y);
     this.game.add.existing(this.hero);
 };
@@ -148,21 +129,16 @@ PlayState._spawnEnemyWall = function (x, y, side) {
 };
 
 PlayState._handleCollisions = function () {
-    //this.game.physics.arcade.collide(this.spiders, this.platforms);
-    //this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
     this.game.physics.arcade.collide(this.mice, this.platforms);
     this.game.physics.arcade.collide(this.mice, this.enemyWalls);
     this.game.physics.arcade.overlap(this.hero, this.cheese, this._onHeroVsCheese, null, this);
     this.game.physics.arcade.overlap(this.hero, this.bread, this._onHeroVsBread, null, this);
     this.game.physics.arcade.collide(this.hero, this.platforms);
-    //this.game.physics.arcade.overlap(this.hero, this.spiders, this._onHeroVsEnemy, null, this);
     this.game.physics.arcade.overlap(this.hero, this.mice, this._onHeroVsEnemy, null, this);
-    //this.game.physics.arcade.overlap(this.hero, this.key, this._onHeroVsKey, null, this)
     this.game.physics.arcade.overlap(this.hero, this.bread, this._onHeroVsBread, null, this)
     this.game.physics.arcade.overlap(this.hero, this.door, this._onHeroVsDoor,
         // ignore if there is no key or the player is on air
         function (hero, door) {
-            //return this.hasKey && hero.body.touching.down;
             return this.hasBread && hero.body.touching.down;
         }, this);
 };
@@ -171,13 +147,8 @@ PlayState._onHeroVsDoor = function (hero, door) {
     this.sfx.door.play();
     this.game.state.restart();
     // TODO: go to the next level instead
+    this.game.state.restart(true, false, { level: this.level + 1 });
 };
-
-/*PlayState._onHeroVsKey = function (hero, key) {
-    this.sfx.key.play();
-    key.kill();
-    this.hasKey = true;
-};*/
 
 PlayState._onHeroVsBread = function (hero, bread) {
     this.sfx.bread.play();
@@ -206,6 +177,7 @@ PlayState._onHeroVsEnemy = function (hero, enemy) {
     else { // game over -> restart the game
         this.sfx.stomp.play();
         this.game.state.restart();
+        this.game.state.restart(true, false, {level: this.level});
     }
 };
 
@@ -247,6 +219,7 @@ window.onload = function() {
     let game = new Phaser.Game(960, 600, Phaser.AUTO, 'game');
     game.state.add('play', PlayState);
     game.state.start('play');
+    game.state.start('play', true, false, {level: 0});
 };
 
 function Hero(game, x, y) {
@@ -286,7 +259,7 @@ Hero.prototype.move = function (direction) {
     this.x += direction * 2.5;
 };
 
-
+const LEVEL_COUNT = 2;
 // ADDING MOVEMENT TO SPRITES
 PlayState.init = function() {
     this.game.renderer.renderSession.roundPixels = true;
@@ -311,6 +284,7 @@ PlayState.init = function() {
     this.breadPickupCount = 0;
     //this.hasKey = false;
     this.hasBread = false;
+    this.level = (data.level || 0) % LEVEL_COUNT;
 };
 
 PlayState.update = function () {
@@ -332,76 +306,25 @@ PlayState._handleInput = function () {
     }
 };
 
-// Spider things
-
-/*function Spider(game, x, y) {
-    Phaser.Sprite.call(this, game, x, y, 'spider');
-
-    // anchor
-    this.anchor.set(0.5);
-    // animation
-    this.animations.add('crawl', [0, 1, 2], 8, true);
-    this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
-    this.animations.play('crawl');
-
-    // physic properties
-    this.game.physics.enable(this);
-    this.body.collideWorldBounds = true;
-    this.body.velocity.x = Spider.SPEED;
-}*/
-
 function Mouse(game, x, y) {
     Phaser.Sprite.call(this, game, x, y, 'mouse');
 
     // anchor
     this.anchor.set(0.5);
-    // animation
-    //this.animations.add('crawl', [0, 1, 2], 8, true);
-    //this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
-    //this.animations.play('crawl');
-
-
     // physic properties
     this.game.physics.enable(this);
     this.body.collideWorldBounds = true;
     this.body.velocity.x = Mouse.SPEED;
 }
 
-//Spider.SPEED = 100;
 Mouse.SPEED = 100;
-
-// inherit from Phaser.Sprite
-/*Spider.prototype = Object.create(Phaser.Sprite.prototype);
-Spider.prototype.constructor = Spider;
-
-Spider.prototype.die = function () {
-    this.body.enable = false;
-
-    this.animations.play('die').onComplete.addOnce(function () {
-        this.kill();
-    }, this);
-};
-
-Spider.prototype.update = function () {
-    // check against walls and reverse direction if necessary
-    if (this.body.touching.right || this.body.blocked.right) {
-        this.body.velocity.x = -Spider.SPEED; // turn left
-    }
-    else if (this.body.touching.left || this.body.blocked.left) {
-        this.body.velocity.x = Spider.SPEED; // turn right
-    }
-};
-*/
 
 Mouse.prototype = Object.create(Phaser.Sprite.prototype);
 Mouse.prototype.constructor = Mouse;
 
 Mouse.prototype.die = function () {
     this.body.enable = false;
-
-
     this.kill();
-
 };
 
 Mouse.prototype.update = function () {
