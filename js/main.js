@@ -37,7 +37,6 @@ PlayState.create = function () {
         stomp: this.game.add.audio('sfx:stomp')
     };
     this.game.add.image(0, 0, 'background');
-    // this._loadLevel(this.game.cache.getJSON('level:1'));
     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`));
     this._createHud();
     this._createHud2();
@@ -110,13 +109,6 @@ PlayState._spawnCheese = function (cheese) {
     sprite.body.allowGravity = false;
 };
 
-PlayState._spawnBread = function (bread) {
-    let sprite = this.bread.create(bread.x, bread.y, 'icon:bread');
-    sprite.anchor.set(-24, -2.5);
-    this.game.physics.enable(sprite);
-    sprite.body.allowGravity = false;
-};
-
 PlayState._spawnEnemyWall = function (x, y, side) {
     let sprite = this.enemyWalls.create(x, y, 'invisible-wall');
     // anchor and y displacement
@@ -147,25 +139,20 @@ PlayState._onHeroVsDoor = function (hero, door) {
     this.sfx.door.play();
     // this.game.state.restart();
     // TODO: go to the next level instead
-    this.game.state.restart(true, false, { level: this.level + 1 });
+    this.game.state.restart(true, false, { level: this.level - 1 });
 };
 
 PlayState._onHeroVsBread = function (hero, bread) {
     this.sfx.bread.play();
     bread.kill();
     this.hasBread = true;
+    this.breadPickupCount++;
 };
 
 PlayState._onHeroVsCheese = function (hero, cheese) {
     this.sfx.cheese.play();
     cheese.kill();
     this.cheesePickupCount++;
-};
-
-PlayState._onHeroVsBread = function (hero, bread) {
-    this.sfx.bread.play();
-    bread.kill();
-    this.breadPickupCount++;
 };
 
 PlayState._onHeroVsEnemy = function (hero, enemy) {
@@ -219,7 +206,7 @@ window.onload = function() {
     let game = new Phaser.Game(960, 600, Phaser.AUTO, 'game');
     game.state.add('play', PlayState);
     // game.state.start('play');
-    game.state.start('play', true, false, {level: 0});
+    game.state.start('play', true, false, {level: 1});
 };
 
 function Hero(game, x, y) {
