@@ -441,7 +441,7 @@ function countDown() {
 countDown();
 
 function game() {
-    if (cheesePickupCount == 10 && breadPickupCount == 1) {
+    if (cheesePickupCount >= 10 && breadPickupCount == 1) {
         nextScreen();
     }
 }
