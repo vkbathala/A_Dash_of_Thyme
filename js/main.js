@@ -145,7 +145,6 @@ PlayState._onHeroVsDoor = function (hero, door) {
 PlayState._onHeroVsBread = function (hero, bread) {
     this.sfx.bread.play();
     bread.kill();
-    this.breadPickupCount++;
     this.hasBread = true;
     this.breadPickupCount++;
 };
