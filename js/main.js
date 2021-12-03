@@ -345,7 +345,7 @@ function countDown() {
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
         if (minutes == 0 && seconds == 0) {
-            window.location.replace('images/you-lose.png');
+            window.location.replace('../loseScreen.html');
         }
 
     }, 1000)
