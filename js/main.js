@@ -58,7 +58,7 @@ PlayState._loadLevel = function(data) {
     this._spawnCharacters({hero: data.hero, mice: data.mice});
     
     // adding GRAVITY YEEE
-    const GRAVITY = 100;
+    const GRAVITY = 1100;
     this.game.physics.arcade.gravity.y = GRAVITY;
 };
 
@@ -329,7 +329,7 @@ Mouse.prototype.update = function () {
 // SCREEN CHANGES
 
 function countDown() {
-    var countDownDate = new Date().getTime() + 90000;
+    var countDownDate = new Date().getTime() + 31000;
     
     // Update the count down every 1 second
     var x = setInterval(function() {
@@ -345,7 +345,7 @@ function countDown() {
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
         if (minutes == 0 && seconds == 0) {
-            loseScreen();
+            window.location.replace('images/you-lose.png');
         }
 
     }, 1000)
