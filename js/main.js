@@ -58,7 +58,7 @@ PlayState._loadLevel = function(data) {
     this._spawnCharacters({hero: data.hero, mice: data.mice});
     
     // adding GRAVITY YEEE
-    const GRAVITY = 1100;
+    const GRAVITY = 100;
     this.game.physics.arcade.gravity.y = GRAVITY;
 };
 
