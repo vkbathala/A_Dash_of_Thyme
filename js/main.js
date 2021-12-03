@@ -59,7 +59,7 @@ PlayState._loadLevel = function(data) {
     this._spawnCharacters({hero: data.hero, mice: data.mice});
     
     // adding GRAVITY YEEE
-    const GRAVITY = 1100;
+    const GRAVITY = 100;
     this.game.physics.arcade.gravity.y = GRAVITY;
 };
 
@@ -153,6 +153,7 @@ PlayState._onHeroVsDoor = function (hero, door) {
 PlayState._onHeroVsBread = function (hero, bread) {
     this.sfx.bread.play();
     bread.kill();
+    this.breadPickupCount++;
     this.hasBread = true;
 };
 
@@ -160,12 +161,6 @@ PlayState._onHeroVsCheese = function (hero, cheese) {
     this.sfx.cheese.play();
     cheese.kill();
     this.cheesePickupCount++;
-};
-
-PlayState._onHeroVsBread = function (hero, bread) {
-    this.sfx.bread.play();
-    bread.kill();
-    this.breadPickupCount++;
 };
 
 PlayState._onHeroVsEnemy = function (hero, enemy) {
