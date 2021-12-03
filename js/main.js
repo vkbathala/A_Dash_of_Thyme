@@ -139,7 +139,9 @@ PlayState._onHeroVsDoor = function (hero, door) {
     this.sfx.door.play();
     // this.game.state.restart();
     // TODO: go to the next level instead
-    this.game.state.restart(true, false, { level: this.level - 1 });
+
+    window.location.replace("../winScreen.html");
+    //this.game.state.restart(true, false, { level: this.level - 1 });
 };
 
 PlayState._onHeroVsBread = function (hero, bread) {
