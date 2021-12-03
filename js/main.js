@@ -37,7 +37,7 @@ PlayState.create = function () {
         stomp: this.game.add.audio('sfx:stomp')
     };
     this.game.add.image(0, 0, 'background');
-    this._loadLevel(this.game.cache.getJSON('level:1'));
+    // this._loadLevel(this.game.cache.getJSON('level:1'));
     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`));
     this._createHud();
     this._createHud2();
@@ -59,7 +59,7 @@ PlayState._loadLevel = function(data) {
     this._spawnCharacters({hero: data.hero, mice: data.mice});
     
     // adding GRAVITY YEEE
-    const GRAVITY = 1100;
+    const GRAVITY = 100;
     this.game.physics.arcade.gravity.y = GRAVITY;
 };
 
@@ -145,7 +145,7 @@ PlayState._handleCollisions = function () {
 
 PlayState._onHeroVsDoor = function (hero, door) {
     this.sfx.door.play();
-    this.game.state.restart();
+    // this.game.state.restart();
     // TODO: go to the next level instead
     this.game.state.restart(true, false, { level: this.level + 1 });
 };
@@ -153,6 +153,7 @@ PlayState._onHeroVsDoor = function (hero, door) {
 PlayState._onHeroVsBread = function (hero, bread) {
     this.sfx.bread.play();
     bread.kill();
+    this.breadPickupCount++;
     this.hasBread = true;
 };
 
@@ -160,12 +161,6 @@ PlayState._onHeroVsCheese = function (hero, cheese) {
     this.sfx.cheese.play();
     cheese.kill();
     this.cheesePickupCount++;
-};
-
-PlayState._onHeroVsBread = function (hero, bread) {
-    this.sfx.bread.play();
-    bread.kill();
-    this.breadPickupCount++;
 };
 
 PlayState._onHeroVsEnemy = function (hero, enemy) {
@@ -176,7 +171,7 @@ PlayState._onHeroVsEnemy = function (hero, enemy) {
     }
     else { // game over -> restart the game
         this.sfx.stomp.play();
-        this.game.state.restart();
+        // this.game.state.restart();
         this.game.state.restart(true, false, {level: this.level});
     }
 };
@@ -218,7 +213,7 @@ PlayState._createHud2 = function() {
 window.onload = function() {
     let game = new Phaser.Game(960, 600, Phaser.AUTO, 'game');
     game.state.add('play', PlayState);
-    game.state.start('play');
+    // game.state.start('play');
     game.state.start('play', true, false, {level: 0});
 };
 
@@ -261,7 +256,7 @@ Hero.prototype.move = function (direction) {
 
 const LEVEL_COUNT = 2;
 // ADDING MOVEMENT TO SPRITES
-PlayState.init = function() {
+PlayState.init = function (data) {
     this.game.renderer.renderSession.roundPixels = true;
     // this function will fix the blurriness of the game sprites
     this.game.renderer.renderSession.roundPixels = true;
@@ -356,7 +351,7 @@ function countDown() {
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
         if (minutes == 0 && seconds == 0) {
-            nextScreen();
+            loseScreen();
         }
 
     }, 1000)
@@ -364,7 +359,7 @@ function countDown() {
 countDown();
 
 function game() {
-    if (cheesePickupCount == 10 && breadPickupCount == 1) {
+    if (cheesePickupCount >= 10 && breadPickupCount == 1) {
         nextScreen();
     }
 }
