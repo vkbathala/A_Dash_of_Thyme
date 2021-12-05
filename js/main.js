@@ -140,7 +140,7 @@ PlayState._onHeroVsDoor = function (hero, door) {
     // this.game.state.restart();
     // TODO: go to the next level instead
 
-    window.location.replace("winScreen.html");
+    window.location.replace("grilledCheese.html");
     //this.game.state.restart(true, false, { level: this.level - 1 });
 };
 
