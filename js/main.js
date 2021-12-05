@@ -136,11 +136,15 @@ PlayState._handleCollisions = function () {
 };
 
 PlayState._onHeroVsDoor = function (hero, door) {
-    this.sfx.door.play();
+    // this.sfx.door.play();
     // this.game.state.restart();
     // TODO: go to the next level instead
 
-    window.location.replace("grilledCheese.html");
+    if (this.cheesePickupCount >= 20) {
+        window.location.replace("grilledCheese.html");
+    } else {
+        window.location.replace("notEnoughCheese.html");
+    }
     //this.game.state.restart(true, false, { level: this.level - 1 });
 };
 
@@ -351,19 +355,3 @@ function countDown() {
     }, 1000)
 }
 countDown();
-
-function game() {
-    if (cheesePickupCount >= 10 && breadPickupCount == 1) {
-        nextScreen();
-    }
-}
-
-function nextScreen() {
-    
-}
-
-function loseScreen() {
-    if (document.getElementById("demo") == "GAME OVER") {
-        this.game.state.restart();
-    }
-}
