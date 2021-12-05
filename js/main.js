@@ -140,7 +140,7 @@ PlayState._onHeroVsDoor = function (hero, door) {
     // this.game.state.restart();
     // TODO: go to the next level instead
 
-    window.location.replace("../winScreen.html");
+    window.location.replace("winScreen.html");
     //this.game.state.restart(true, false, { level: this.level - 1 });
 };
 
@@ -344,8 +344,8 @@ function countDown() {
         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        if (minutes == 0 && seconds == 0) {
-            window.location.replace('../loseScreen.html');
+        if (minutes === 0 && seconds === 0) {
+            window.location.replace('loseScreen.html');
         }
 
     }, 1000)
