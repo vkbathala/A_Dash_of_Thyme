@@ -30,3 +30,24 @@ a {
     border: none;
     font-family: "Comic Sans MS";
 }
+
+.guy {
+    width: 400px;
+    height: 550px;
+    position: fixed;
+    animation-name: guyHappy;
+    animation-duration: 4s;
+    animation-delay: 2s;
+    animation-iteration-count: 1;
+    z-index: 2;
+    transform: rotate(-50deg);
+    animation-fill-mode: forwards;
+}
+
+@keyframes guyHappy {
+    0%   {left:125%; top:0%;}
+    /*25%  {left:200px; top:0px;}
+    50%  {left:200px; top:200px;}
+    75%  {left:0px; top:200px;}*/
+    100% {left:85%; top:0%;}
+}
