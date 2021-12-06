@@ -136,11 +136,11 @@ PlayState._handleCollisions = function () {
 };
 
 PlayState._onHeroVsDoor = function (hero, door) {
-    // this.sfx.door.play();
+    // this.sfx.bread.play();
     // this.game.state.restart();
     // TODO: go to the next level instead
 
-    if (this.cheesePickupCount >= 20) {
+    if (this.cheesePickupCount >= 21) {
         window.location.replace("grilledCheese.html");
     } else {
         window.location.replace("notEnoughCheese.html");
